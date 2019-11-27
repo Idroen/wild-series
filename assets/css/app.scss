@@ -1,3 +1,31 @@
 body {
-    background-color: lightgray;
+    background-color: black;
+    color: #a2d2df;
+}
+
+$theme-colors: (
+        "light":#a2d2df,
+);
+$font-color: #a2d2df;
+
+@import "~bootstrap/scss/bootstrap";
+
+body {
+    background-color: black;
+    color: $font-color;
+}
+.navbar-light .navbar-brand{
+    color: #f88e55;
+    font-weight: bold;
+}
+
+.btn-outline-success {
+    color: #FFFFFF;
+    border-color: #FFFFFF;
+}
+.navbar-light .navbar-nav .nav-link {
+    color: #FFFFFF;
+}
+.navbar-light .navbar-nav .active > .nav-link{
+    color: #FFFFFF;
 }
