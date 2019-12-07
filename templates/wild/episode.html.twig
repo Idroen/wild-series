@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+{% block title %}Episode{% endblock %}
+
+{% block body %}
+
+    <div class="media">
+        <div class="media-body">
+            <h1 class="mt-0">{{ }}</h1>
+            <p>{{  }}</p>
+            <p>Catégorie : {{ p }}</p>
+        </div>
+    </div>
+
+
+    <a href="{{ path('wild_index') }}">
+        Retour à l'accueil
+    </a>
+
+{% endblock %}

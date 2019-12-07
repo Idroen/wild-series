@@ -2,7 +2,10 @@
 // src/Controller/WildController.php
 namespace App\Controller;
 
+use App\Entity\Category;
 use App\Entity\Program;
+use App\Entity\Season;
+use App\Entity\Episode;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -14,13 +17,13 @@ Class WildController extends AbstractController
      * @return Response A response instance
      */
 
-    public function index() : Response
+    public function index(): Response
     {
         $programs = $this->getDoctrine()
             ->getRepository(Program::class)
             ->findAll();
 
-        if (!$programs){
+        if (!$programs) {
             throw $this->createNotFoundException(
                 'No program found in program\'s table.'
             );
@@ -32,13 +35,11 @@ Class WildController extends AbstractController
     }
 
     /**
-     * Getting a program with a formatted slug for title
-     *
      * @param string $slug The slugger
      * @Route("wild/show/{slug<^[a-z0-9-]+$>}", defaults={"slug" = null}, name="wild_show")
      * @return Response
      */
-    public function show(?string $slug):Response
+    public function showByProgram(string $slug): Response
     {
         if (!$slug) {
             throw $this
@@ -53,24 +54,26 @@ Class WildController extends AbstractController
             ->findOneBy(['title' => mb_strtolower($slug)]);
         if (!$program) {
             throw $this->createNotFoundException(
-                'No program with '.$slug.' title, found in program\'s table.'
+                'No program with ' . $slug . ' title, found in program\'s table.'
             );
         }
+        $seasons = $this->getDoctrine()
+            ->getRepository(Season::class)
+            ->findBy(['program' => $program]);
 
         return $this->render('wild/show.html.twig', [
             'program' => $program,
-            'slug'  => $slug,
+            'slug' => $slug,
+            'seasons' => $seasons,
         ]);
     }
 
     /**
-     * Getting a program with a formatted category_name for category
-     *
      * @param string $categoryName The category
      * @Route("wild/category/{categoryName<^[a-z0-9-]+$>}", defaults={"category" = null}, name="wild_category")
      * @return Response
      */
-    public function showByCategory(string $categoryName):Response
+    public function showByCategory(string $categoryName): Response
     {
         if (!$categoryName) {
             throw $this
@@ -82,11 +85,11 @@ Class WildController extends AbstractController
         );
         $category = $this->getDoctrine()
             ->getRepository(Category::class)
-            ->findOneBy(['name' => mb_strtolower ($categoryName)]);
+            ->findOneBy(['name' => mb_strtolower($categoryName)]);
         if (!$category) {
             throw $this->createNotFoundException('No category with ' . $categoryName . 'found in category\'s table.');
         }
-        $programs =$this->getDoctrine()
+        $programs = $this->getDoctrine()
             ->getRepository(Program::class)
             ->findBy(['category' => $category], ['id' => 'desc'], 3);
         if (!$programs) {
@@ -98,9 +101,30 @@ Class WildController extends AbstractController
         ]);
     }
 
-    public function showByProgram()
+    /**
+     * @param int $id
+     * @Route("/wild/season/{id<^[0-9-]+$>}", defaults={"id" = null}, name="season")
+     * @return Response
+     */
+    public function showBySeason(int $id): Response
     {
-        
-    }
+        if (!$id) {
+            throw $this
+                ->createNotFoundException('No season has been sent to find.');
+        }
 
+        $season = $this->getDoctrine()
+            ->getRepository(Season::class)
+            ->find($id);
+
+        $program = $season->getProgram();
+        $episodes = $season->getEpisodes();
+
+
+        return $this->render('wild/season.html.twig', [
+            'program' => $program,
+            'season' => $season,
+            'episodes' => $episodes,
+        ]);
+    }
 }
