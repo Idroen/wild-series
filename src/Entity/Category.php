@@ -54,6 +54,7 @@ class Category
      * @ORM\OneToMany(targetEntity="App\Entity\Program", mappedBy="category")
      */
     private $programs;
+
     public function __construct()
     {
         $this->programs = new ArrayCollection();
