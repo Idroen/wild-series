@@ -13,6 +13,15 @@ use Symfony\Component\Routing\Annotation\Route;
 Class WildController extends AbstractController
 {
     /**
+     * @Route("/wild/{id}")
+     */
+    public function show(int $id): Response
+    {
+        $program = $this->getDoctrine()->getRepository(Program::class)->find($id);
+        return $this->render('program.html.twig', ['program' => $program]);
+    }
+
+    /**
      * @Route("/wild", name="wild_index")
      * @return Response A response instance
      */
@@ -125,6 +134,23 @@ Class WildController extends AbstractController
             'program' => $program,
             'season' => $season,
             'episodes' => $episodes,
+        ]);
+    }
+
+    /**
+     * @param Episode $episode
+     * @Route("wild/episode/{id}", name="episode")
+     * @return Response
+     */
+    public function showEpisode(Episode $episode): Response
+    {
+        $season = $episode->getSeason();
+        $program = $season->getProgram();
+
+        return $this->render('wild/episode.html.twig', [
+            'episode' => $episode,
+            'season' => $season,
+            'program' => $program,
         ]);
     }
 }
