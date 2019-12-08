@@ -7,7 +7,10 @@
         <img class="align-self-start mr-3" src="{{ program.poster }}" alt="{{ program.title }} poster">
         <div class="media-body">
             <h1 class="mt-0">{{ program.title }} saison {{ season.id }}</h1>
-            <a href="{{ path('season') }}">Saison 1</a>
+            <a href="{{ path('season') }}" class="btn btn-light">Saison 1</a>
+            <a href="{{ path('season') }}" class="btn btn-light">Saison 2</a>
+            <a href="{{ path('season') }}" class="btn btn-light">Saison 3</a>
+            {#  <a href="{{ path('season', {'id': season.id}) }}">Saison 1</a>#}
             <p>Categorie : {{ program.category.name }}</p>
             <p>Synopsis : {{ season.description }}</p>
             <p>Liste des épisodes : </p>
@@ -17,11 +20,12 @@
     {% for episode in episodes %}
         <h5>Episode {{ episode.number }} :{{ episode.title }}</h5>
         <p>{{ episode.synopsis }}</p>
+        <a href="{{ path('episode', {'id': episode.id}) }}" class="btn btn-light">Regarder cet épisode</a>
     {% else %}
         No episode yet for this program !
     {% endfor %}
 
-
+<br>
     <a href="{{ path('wild_index') }}">
         Retour à l'accueil
     </a>
