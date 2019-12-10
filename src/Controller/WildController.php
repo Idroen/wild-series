@@ -6,20 +6,18 @@ use App\Entity\Category;
 use App\Entity\Program;
 use App\Entity\Season;
 use App\Entity\Episode;
+use App\Form\CategoryType;
+use App\Form\ProgramSearchType;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Request;
+
 
 Class WildController extends AbstractController
 {
-    /**
-     * @Route("/wild/{id}")
-     */
-    public function show(int $id): Response
-    {
-        $program = $this->getDoctrine()->getRepository(Program::class)->find($id);
-        return $this->render('program.html.twig', ['program' => $program]);
-    }
 
     /**
      * @Route("/wild", name="wild_index")
@@ -37,15 +35,23 @@ Class WildController extends AbstractController
                 'No program found in program\'s table.'
             );
         }
+        $form = $this->createForm(
+            ProgramSearchType::class,
+            null,
+            ['method' => Request::METHOD_GET]
+        );
+
         return $this->render(
-            'wild/index.html.twig',
-            ['programs' => $programs,]
+            'wild/index.html.twig', [
+                'programs' => $programs,
+                'form' => $form->createView(),
+            ]
         );
     }
 
     /**
      * @param string $slug The slugger
-     * @Route("wild/show/{slug<^[a-z0-9-]+$>}", defaults={"slug" = null}, name="wild_show")
+     * @Route("wild/show/{slug}", defaults={"slug" = null}, name="wild_show")
      * @return Response
      */
     public function showByProgram(string $slug): Response
@@ -58,6 +64,7 @@ Class WildController extends AbstractController
             '/-/',
             ' ', ucwords(trim(strip_tags($slug)), "-")
         );
+
         $program = $this->getDoctrine()
             ->getRepository(Program::class)
             ->findOneBy(['title' => mb_strtolower($slug)]);
@@ -79,7 +86,7 @@ Class WildController extends AbstractController
 
     /**
      * @param string $categoryName The category
-     * @Route("wild/category/{categoryName<^[a-z0-9-]+$>}", defaults={"category" = null}, name="wild_category")
+     * @Route("wild/category/{categoryName}", defaults={"category" = null}, name="wild_category")
      * @return Response
      */
     public function showByCategory(string $categoryName): Response
@@ -120,7 +127,11 @@ Class WildController extends AbstractController
         if (!$id) {
             throw $this
                 ->createNotFoundException('No season has been sent to find.');
-        }
+                }
+        $seasons = $this->getDoctrine()
+            ->getRepository(Season::class)
+            ->findAll();
+
 
         $season = $this->getDoctrine()
             ->getRepository(Season::class)
@@ -129,11 +140,11 @@ Class WildController extends AbstractController
         $program = $season->getProgram();
         $episodes = $season->getEpisodes();
 
-
         return $this->render('wild/season.html.twig', [
-            'program' => $program,
-            'season' => $season,
+            'program'  => $program,
+            'season'   => $season,
             'episodes' => $episodes,
+            'seasons'  => $seasons
         ]);
     }
 
@@ -153,4 +164,55 @@ Class WildController extends AbstractController
             'program' => $program,
         ]);
     }
+
+    /**
+     * @param Category $categories
+     * @return Response
+     * @Route("wild/categories", name="categories")
+     */
+
+    public function showCategories(): Response
+    {
+        $categories = $this->getDoctrine()
+            ->getRepository(Category::class)
+            ->findAll();
+
+        return $this->render('category/show.html.twig',[
+            'categories' => $categories,]);
+    }
+
+    /**
+     * @Route("/wild/add", name="wild_add", methods={"GET", "POST"})
+     * @Route("/wild/edit/{id}", name="wild_edit", methods={"GET", "POST"} )
+     */
+    public function new(EntityManagerInterface $em, Request $request ,Program $program = null)
+    {
+
+        $category = new Category();
+        $form = $this->createForm(CategoryType::class, $category);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()){
+            $data = $form->getData();
+        }
+        return $this->render('wild/category.html.twig', [
+            'form' => $form->createView(),
+            'program' => $program]);
+        /*$program = new Program;
+
+        $form = $this->createForm(ProgramSearchType::class);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()){
+            $program = $form->getData();
+            $em->persist($program);
+            $em->flush();
+            return $this->redirect('wild_index');
+            }
+
+        return $this->render('wild/category.html.twig', [
+            'form' => $form->createView(),
+            'program' => $program
+    ]);*/
+    }
+
 }

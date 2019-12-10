@@ -11,7 +11,7 @@
             <h2>Saison {{ season.id }}:</h2>
             <h3>- Episode {{ episode.number }} : {{ episode.title }}</h3>
             <p>{{ episode.synopsis }}</p>
-            <a href="{{ path('episode', {'id': episode.id}) }}" class="btn btn-light">Liste des épisodes saison {{ season.id }} </a>
+            <a href="{{ path('season', {'id': season.id}) }}" class="btn btn-light">Liste des épisodes saison {{ season.id }} </a>
 
         </div>
     </div>

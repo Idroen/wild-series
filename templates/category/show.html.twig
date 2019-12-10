@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Categories{% endblock %}
+
+
+
+{% block body %}
+
+    <ul>
+        {% for category in categories %}
+            <li><a href="{{  path('wild_category',{'categoryName': category.name}) }}">- {{ category.name }} :</a></li>
+        {% endfor %}
+    </ul>
+
+    <a href="{{ path('app_index') }}">
+        Retour à l'accueil
+    </a>
+
+{% endblock %}
