@@ -10,10 +10,13 @@
             {% for season in seasons %}
                 <a href="{{ path('season', {'id': season.id}) }}" class="btn btn-light", >Saison {{ loop.index }}</a>
             {% endfor %}
-            <p>Categorie : {{ program.category.name }}</p>
+            <p>Catégorie : {{ program.category.name }}</p>
             <p>Synopsis : {{ season.description }}</p>
+            <a class="btn btn-dark" href="{{ path('season_edit', {'id': season.id}) }}">éditer la saison</a>
+
             <p>Liste des épisodes : </p>
         </div>
+
     </div>
 
     {% for episode in episodes %}
@@ -22,6 +25,7 @@
         <a href="{{ path('episode', {'id': episode.id}) }}" class="btn btn-light">Regarder cet épisode</a>
     {% else %}
         No episode yet for this program !
+        Il n'y a aucun épisode dans cette saison. :(
     {% endfor %}
 
 <br>

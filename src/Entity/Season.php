@@ -119,11 +119,14 @@ class Season
         return $this;
     }
 
-
-    public function getProgram(): ?Program
+    /**
+     * @return Collection|Program[]
+     */
+    public function getProgram(): ?Program //Collection
     {
         return $this->program;
     }
+
 
     public function setProgram(?Program $program): self
     {
